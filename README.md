@@ -2,7 +2,24 @@
 
 `createSelector` creates a selector for you, so you don't have to remember how one is created! It uses a declarative syntax so that it is simple for you to define what the selector should find.
 
-Examples:
+## Features
+✅ selectors with tag name, id and class names
+
+✅ ***and*** constraints so that combinations with tag name, id and class names can be created
+
+❌ ***not*** constraints so that selectors can be created with the :not()-selector (I may add this at some point)
+
+## Usage
+
+```javascript
+// CJS
+const createSelector = require('@adamduehansen/create-selector').default;
+
+// ESM
+import createSelector from '@adamduehansen/create-selector';
+```
+
+## Examples
 
 ```javascript
 // Selecting a div element with the id of 'some-id'
@@ -25,10 +42,3 @@ console.log(selector); // #signupButton.btn.disabled
 ```
 
 *Why you would use this - I don't know. I just though it would be cool!*
-
-## Features
-✅ selectors with tag name, id and class names
-
-✅ ***and*** constraints so that combinations with tag name, id and class names can be created
-
-❌ ***not*** constraints so that selectors can be created with the :not()-selector (I may add this at some point)

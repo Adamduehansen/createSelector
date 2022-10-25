@@ -43,21 +43,30 @@ interface InitialSelector {
   withClassName: WithClassName;
 }
 
+function createIdSelector(id?: string): string {
+  if (!id) {
+    return '';
+  }
+
+  return `#${id}`;
+}
+
+function createClassNameSelector(classNames: string[]): string {
+  if (classNames.length <= 0) {
+    return '';
+  }
+
+  return `.${classNames.join('.')}`;
+}
+
 function formatSelector(selector: SelectorOptions): () => string {
   return function () {
     const { classNames, id, tagName } = selector;
-    let classes = '';
-    let identity = '';
-
-    if (id) {
-      identity = `#${id}`;
-    }
-
-    if (classNames.length > 0) {
-      classes = `.${classNames.join('.')}`;
-    }
-
-    return [tagName, identity, classes].join('');
+    return [
+      tagName,
+      createIdSelector(id),
+      createClassNameSelector(classNames),
+    ].join('');
   };
 }
 

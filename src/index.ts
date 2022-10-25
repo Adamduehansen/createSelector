@@ -1,10 +1,15 @@
 interface SelectorOptions {
+  tagName?: keyof HTMLElementTagNameMap;
   id?: string;
   classNames: string[];
 }
 
 interface Selector {
   toString: () => string;
+}
+
+interface TagNameSelector extends Selector {
+  and: () => TagNameAndConstraint;
 }
 
 interface IdSelector extends Selector {
@@ -15,8 +20,14 @@ interface ClassNameSelector extends Selector {
   and: () => ClassNameAndConstraint;
 }
 
+type WithTagName = (tagName: keyof HTMLElementTagNameMap) => TagNameSelector;
 type WithId = (id: string) => IdSelector;
 type WithClassName = (className: string) => ClassNameSelector;
+
+interface TagNameAndConstraint {
+  withId: WithId;
+  withClassName: WithClassName;
+}
 
 interface ClassNameAndConstraint {
   withClassName: WithClassName;
@@ -27,13 +38,14 @@ interface IdAndConstraint {
 }
 
 interface InitialSelector {
+  withTagName: WithTagName;
   withId: WithId;
   withClassName: WithClassName;
 }
 
 function formatSelector(selector: SelectorOptions): () => string {
   return function () {
-    const { classNames, id } = selector;
+    const { classNames, id, tagName } = selector;
     let classes = '';
     let identity = '';
 
@@ -45,7 +57,28 @@ function formatSelector(selector: SelectorOptions): () => string {
       classes = `.${classNames.join('.')}`;
     }
 
-    return [identity, classes].join('');
+    return [tagName, identity, classes].join('');
+  };
+}
+
+function makeTagNameAndConstraint(
+  selector: SelectorOptions
+): () => TagNameAndConstraint {
+  return function () {
+    return {
+      withId: makeIdSelector(selector),
+      withClassName: makeClassNameSelector(selector),
+    };
+  };
+}
+
+function makeTagNameSelector(selector: SelectorOptions): WithTagName {
+  return function (tagName: keyof HTMLElementTagNameMap) {
+    selector.tagName = tagName;
+    return {
+      toString: formatSelector(selector),
+      and: makeTagNameAndConstraint(selector),
+    };
   };
 }
 
@@ -59,9 +92,7 @@ function makeClassNameAndConstraint(
   };
 }
 
-export function makeClassNameSelector(
-  selector: SelectorOptions
-): WithClassName {
+function makeClassNameSelector(selector: SelectorOptions): WithClassName {
   return function (className: string): ClassNameSelector {
     selector.classNames.push(className);
     return {
@@ -79,7 +110,7 @@ function makeIdAndConstraint(selector: SelectorOptions): () => IdAndConstraint {
   };
 }
 
-export function makeIdSelector(selector: SelectorOptions): WithId {
+function makeIdSelector(selector: SelectorOptions): WithId {
   return function (id: string): IdSelector {
     selector.id = id;
     return {
@@ -96,6 +127,7 @@ function createSelector(): InitialSelector {
   };
 
   return {
+    withTagName: makeTagNameSelector(selector),
     withId: makeIdSelector(selector),
     withClassName: makeClassNameSelector(selector),
   };

@@ -7,13 +7,13 @@ interface Selector {
   toString: () => string;
 }
 
-type IdSelector = Selector & {
+interface IdSelector extends Selector {
   and: () => IdAndConstraint;
-};
+}
 
-type ClassNameSelector = Selector & {
+interface ClassNameSelector extends Selector {
   and: () => ClassNameAndConstraint;
-};
+}
 
 type WithId = (id: string) => IdSelector;
 type WithClassName = (className: string) => ClassNameSelector;
@@ -26,10 +26,10 @@ interface IdAndConstraint {
   withClassName: WithClassName;
 }
 
-type InitialSelector = {
+interface InitialSelector {
   withId: WithId;
   withClassName: WithClassName;
-};
+}
 
 function formatSelector(selector: SelectorOptions): () => string {
   return function () {

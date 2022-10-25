@@ -1,4 +1,5 @@
 # createSelector
+![example workflow](https://github.com/Adamduehansen/createSelector/actions/workflows/node.js.yml/badge.svg)
 
 `createSelector` creates a selector for you, so you don't have to remember how one is created! It uses a declarative syntax so that it is simple for you to define what the selector should find.
 
